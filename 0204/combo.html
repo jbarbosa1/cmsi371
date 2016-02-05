@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bloo</title>
+  </head>
+  <body>
+    <canvas id="canvas" width="800" height="800">
+      Sorry, but you need a web browser that supports the
+      <code>canvas</code> element.
+    </canvas>
+
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="bloo.js"></script>
+    <script src="paddle.js"></script>
+    <script src="egg.js"></script>
+
+    <script type="application/javascript">
+    (function() {
+      var ctx = $("canvas")[0].getContext("2d");
+
+      ctx.save();
+      ctx.translate(0, 0);
+      SpriteLibrary.bloo({
+        ctx: ctx
+      });
+      ctx.restore();
+      ctx.save();
+      ctx.translate(30, -30);
+      SpriteLibrary.paddle({
+        ctx: ctx
+      });
+      ctx.restore();
+      ctx.save();
+      ctx.translate(20, -10);
+      SpriteLibrary.egg({
+        ctx: ctx
+      });
+      ctx.restore();
+
+    }())
+
+    </script>
+  </body>
+
+</html>
