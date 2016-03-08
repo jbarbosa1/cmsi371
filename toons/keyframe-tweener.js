@@ -119,6 +119,8 @@ var KeyframeTweener = {
                         syDistance = (endKeyframe.sy || 1) - syStart;
                         rotateStart = (startKeyframe.rotate || 0) * Math.PI / 180;
                         rotateDistance = (endKeyframe.rotate || 0) * Math.PI / 180 - rotateStart;
+                        beginSpec = startKeyframe.spriteDetails || {};
+                        endSpec = endKeyframe.spriteDetails || {};
                         currentTweenFrame = currentFrame - startKeyframe.frame;
                         duration = endKeyframe.frame - startKeyframe.frame + 1;
 
@@ -135,8 +137,16 @@ var KeyframeTweener = {
                             ease(currentTweenFrame, rotateStart, rotateDistance, duration)
                         );
 
+                        fostersSpecs = {
+                            ctx: renderingContext
+                        };
+
+                        for details in beginSpec {
+                            fostersSpecs[details] = ease(currentTweenFrame, beginSpec[details], endSpec[details] - beginSpec[details], duration);
+                        }
+
                         // Draw the sprite.
-                        sprites[i].draw(renderingContext);
+                        sprites[i].draw(fostersSpecs);
 
                         // Clean up.
                         renderingContext.restore();
