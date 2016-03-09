@@ -141,7 +141,7 @@ var KeyframeTweener = {
                             ctx: renderingContext
                         };
 
-                        for details in beginSpec {
+                        for(details in beginSpec) {
                             fostersSpecs[details] = ease(currentTweenFrame, beginSpec[details], endSpec[details] - beginSpec[details], duration);
                         }
 

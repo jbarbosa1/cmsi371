@@ -3,6 +3,7 @@
 
     SpriteLibrary.bloo = function (blooSpecs) {
         var ctx = blooSpecs.ctx;
+        var smile = blooSpecs.smile || 0;
 
         //body
         ctx.save();
@@ -43,20 +44,25 @@
         ctx.fillStyle = "black";
         ctx.moveTo(58, 53);
         ctx.bezierCurveTo(62, 60, 66, 64, 84, 65);
-        //Start
-        ctx.bezierCurveTo(78, 76, 54, 72, 58, 53);
-        ctx.fill();
-        ctx.clip();
-        // ctx.lineWidth = 1.5;
-        // ctx.stroke();
+        
+        if(smile === 0) {
+            //Close
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+        } else {
+            //Open
+            ctx.bezierCurveTo(78, 76, 54, 72, 58, 53);
+            ctx.fill();
+            ctx.clip();
 
-        //tongue
-        ctx.beginPath();
-        ctx.fillStyle = "pink";
-        ctx.moveTo(58, 72);
-        ctx.arc(65, 72, 7, 0, Math.PI * 2, true);
-        ctx.fill();
-        //Finish
+            //tongue
+            ctx.beginPath();
+            ctx.fillStyle = "pink";
+            ctx.moveTo(58, 72);
+            ctx.arc(65, 72, 7, 0, Math.PI * 2, true);
+            ctx.fill();
+            //Finish
+        }
 
         ctx.restore();
     }
