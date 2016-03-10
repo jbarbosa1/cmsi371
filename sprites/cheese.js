@@ -1,10 +1,10 @@
 (function () {
     window.SpriteLibrary = window.SpriteLibrary || { };
     var image = new Image();
-    image.src = '../sprites/fosters-background.jpg';
+    image.src = '../sprites/cheese.jpg';
 
-    SpriteLibrary.fosters = function (houseSpecs) {
-        var ctx = houseSpecs.ctx;
+    SpriteLibrary.cheese = function (cheeser) {
+        var ctx = cheeser.ctx;
 
         ctx.save();
         ctx.drawImage(image, 0, 0);

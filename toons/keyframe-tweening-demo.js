@@ -8,17 +8,6 @@
         // First, a selection of "drawing functions" from which we
         // can choose.  Their common trait: they all accept a single
         // renderingContext argument.
-        // square = function (renderingContext) {
-        //     renderingContext.fillStyle = "blue";
-        //     renderingContext.fillRect(-20, -20, 40, 40);
-        // },
-
-        // circle = function (renderingContext) {
-        //     renderingContext.strokeStyle = "red";
-        //     renderingContext.beginPath();
-        //     renderingContext.arc(0, 0, 50, 0, Math.PI * 2);
-        //     renderingContext.stroke();
-        // },
 
         fosters = function(house) {
             SpriteLibrary.fosters({
@@ -33,12 +22,25 @@
             });
         },
 
-        // egg = function(coco) {
-        //     SpriteLibrary.egg({
-        //         ctx: coco.ctx,
-        //         open: coco.open
-        //     });
-        // }
+        egg = function(coco) {
+            SpriteLibrary.egg({
+                ctx: coco.ctx,
+                open: coco.open
+            });
+        }
+
+        paddle = function(item) {
+            SpriteLibrary.paddle({
+                ctx: item.ctx,
+                hit: item.hit
+            });
+        },
+
+        cheese = function(mac) {
+            SpriteLibrary.cheese({
+                ctx: mac.ctx
+            });    
+        }
 
         // Then, we have "easing functions" that determine how
         // intermediate frames are computed.
@@ -46,81 +48,69 @@
         // Now, to actually define the animated sprites.  Each sprite
         // has a drawing function and an array of keyframes.
         sprites = [
-            // {
-            //     draw: square,
-            //     keyframes: [
-            //         {
-            //             frame: 0,
-            //             tx: 20,
-            //             ty: 20,
-            //             ease: KeyframeTweener.linear
-            //         },
-
-            //         {
-            //             frame: 30,
-            //             tx: 100,
-            //             ty: 50,
-            //             ease: KeyframeTweener.quadEaseInOut
-            //         },
-
-            //         // The last keyframe does not need an easing function.
-            //         {
-            //             frame: 80,
-            //             tx: 80,
-            //             ty: 500,
-            //             rotate: 60 // Keyframe.rotate uses degrees.
-            //         }
-            //     ]
-            // },
-
-            // {
-            //     draw: circle,
-            //     keyframes: [
-            //         {
-            //             frame: 50,
-            //             tx: 300,
-            //             ty: 600,
-            //             sx: 0.5,
-            //             sy: 0.5,
-            //             ease: KeyframeTweener.quadEaseOut
-            //         },
-
-            //         {
-            //             frame: 100,
-            //             tx: 300,
-            //             ty: 0,
-            //             sx: 3,
-            //             sy: 0.25,
-            //             ease: KeyframeTweener.quadEaseOut
-            //         },
-
-            //         {
-            //             frame: 150,
-            //             tx: 300,
-            //             ty: 600,
-            //             sx: 0.5,
-            //             sy: 0.5
-            //         }
-            //     ]
-            // }
-
             {
                 draw: fosters,
                 keyframes: [
                     {
-                        frame:0,
+                        frame: 0,
                         tx: 0,
                         ty: 0,
-                        sx: 1,
-                        sy: 1
+                        sx: 1.02,
+                        sy: 1.02
                     },
 
                     {
-                        frame: 9000,
+                        frame: 1000,
                         tx: 0,
                         ty: 0,
-                        sx: 1,
-                        sy: 1
+                        sx: 1.02,
+                        sy: 1.02
+                    }
+                ]
+            },
+
+            {
+                draw: egg,
+                keyframes: [
+                    {
+                        frame: 0,
+                        tx: 650,
+                        ty: 200,
+                        sx: .9,
+                        sy: .95
+                    },
+
+                    {
+                        frame: 600,
+                        tx: 650,
+                        ty: 200,
+                        sx: .9,
+                        sy: .85,
+                        spriteDetails: {
+                            open: 1
+                        }
+                    },
+
+                    {
+                        frame: 650,
+                        tx: 650,
+                        ty: 200,
+                        sx: .9,
+                        sy: .85,
+                        spriteDetails: {
+                            open: 1
+                        }
+                    },
+
+                    {
+                        frame: 1000,
+                        tx: 650,
+                        ty: 200,
+                        sx: .9,
+                        sy: .85,
+                        spriteDetails: {
+                            open: 0
+                        }
                     }
                 ]
             },
@@ -130,8 +120,8 @@
                 keyframes: [
                     {
                         frame: 0,
-                        tx: 100,
-                        ty: 175,
+                        tx: 110,
+                        ty: 185,
                         sx: .75,
                         sy: .75,
                         spriteDetails: {
@@ -152,7 +142,7 @@
                         tx: 200,
                         ty: 225,
                         sx: .75,
-                        sy: .65
+                        sy: .725
                     },
 
                     {
@@ -176,21 +166,121 @@
                         tx: 350,
                         ty: 250,
                         sx: .75,
-                        sy: .7,
-                        spriteDetails: {
-                            smile: 10
-                        }
+                        sy: .7
                     },
 
                     {
                         frame: 300,
-                        tx: 350,
+                        tx: 400,
                         ty: 250,
                         sx: .75,
-                        sy: .7,
+                        sy: .725
+                    },
+
+                    {
+                        frame: 350,
+                        tx: 450,
+                        ty: 250,
+                        sx: .75,
+                        sy: .72
+                    },
+
+                    {
+                        frame: 400,
+                        tx: 500,
+                        ty: 250,
+                        sx: .75,
+                        sy: .73
+                    },
+
+                    {
+                        frame: 450,
+                        tx: 550,
+                        ty: 250,
+                        sx: .75,
+                        sy: .71
+                    },
+
+                    {
+                        frame: 500,
+                        tx: 600,
+                        ty: 250,
+                        sx: .75,
+                        sy: .73
+                    },
+
+                    {
+                        frame: 570,
+                        tx: 670,
+                        ty: 250,
+                        sx: .75,
+                        sy: .72
+                    },
+
+                    {
+                        frame: 600,
+                        tx: 680,
+                        ty: 250,
+                        sx: .75,
+                        sy: .72,
                         spriteDetails: {
-                            smile: 10
+                            smile: 1
                         }
+                    },
+
+                    {
+                        frame: 1000,
+                        tx: 680,
+                        ty: 250,
+                        sx: .75,
+                        sy: .72,
+                        spriteDetails: {
+                            smile: 1
+                        }
+                    }
+
+                ]
+            },
+
+            {
+                draw: paddle,
+                keyframes: [
+                    {
+                        frame: 600,
+                        tx: 680,
+                        ty: 220,
+                        sx: .9,
+                        sy: .95
+                    },
+
+                    {
+                        frame: 1000,
+                        tx: 680,
+                        ty: 160,
+                        sx: .9,
+                        sy: .85,
+                        
+                    }
+                ]
+            },
+
+            {
+                draw: cheese,
+                keyframes: [
+                    {
+                        frame: 1000,
+                        tx: 0,
+                        ty: 0,
+                        sx: .9,
+                        sy: .9
+                    },
+
+                    {
+                        frame: 1150,
+                        tx: 0,
+                        ty: 0,
+                        sx: .9,
+                        sy: .9
                     }
                 ]
             }
@@ -203,6 +293,33 @@
         renderingContext: canvas.getContext("2d"),
         width: canvas.width,
         height: canvas.height,
-        sprites: sprites
+        sprites: sprites,
+        frameRate: 36
     });
+
+    var chorus = new Audio('../sprites/hallelujah.mp3');
+    var poot = new Audio('../sprites/pooted.mp3');
+    var bloo = new Audio('../sprites/bloo.mp3');
+
+    setTimeout(mattress, 8400);
+    setTimeout(notNow, 17600);
+    setTimeout(now, 17800);
+    setTimeout(playIt, 27000);
+
+    function mattress() {
+        bloo.play();
+    }
+
+    function notNow() {
+        bloo.pause();
+        bloo.currentTime = 0;    
+    }
+
+    function playIt() {
+        poot.play();
+    }
+
+    function now() {
+        chorus.play();
+    }
 }());

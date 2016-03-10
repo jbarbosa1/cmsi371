@@ -3,7 +3,7 @@
 
     SpriteLibrary.egg = function (eggSpecs) {
         var ctx = eggSpecs.ctx;
-        var open = eggSpecs.open || false;
+        var open = eggSpecs.open || 0;
 
         //west egg
         ctx.save();
@@ -16,8 +16,8 @@
         ctx.arc(160, 170, 30, Math.PI / 2, 3 * Math.PI / 2, false);
         ctx.fill();
         ctx.stroke();
-        if(open == false){
-        //east egg
+        if(open === 0){
+        //east egg 
             //closed
             ctx.beginPath();
             ctx.moveTo(160, 200);
@@ -26,6 +26,11 @@
             ctx.stroke();       
         } else {
             //open
+            ctx.beginPath();
+            ctx.moveTo(160, 200);
+            ctx.bezierCurveTo(165, 260, 215, 260, 220, 200);
+            ctx.fill();
+            ctx.stroke();
         }
         ctx.restore();
 
