@@ -301,10 +301,10 @@
     var poot = new Audio('../sprites/pooted.mp3');
     var bloo = new Audio('../sprites/bloo.mp3');
 
-    setTimeout(mattress, 8400);
-    setTimeout(notNow, 17600);
-    setTimeout(now, 17800);
-    setTimeout(playIt, 27000);
+    setTimeout(mattress, 10000);
+    setTimeout(notNow, 19400);
+    setTimeout(now, 19600);
+    setTimeout(playIt, 30500);
 
     function mattress() {
         bloo.play();
