@@ -27,9 +27,9 @@
     // One display of just one color passed
     Primitives.circleBres1(renderingContext, 105, 315, 100, [2, 173, 100], [0, 0, 200], [0, 255, 0], [190, 140, 0]);
     // // Four displays of 2 colors passed
-    // Primitives.circleDDA(renderingContext, 310, 315, 100, [200, 0, 20], [19, 200, 190]);
+    Primitives.circleDDA(renderingContext, 310, 315, 100, [200, 0, 20], [19, 200, 190], [50, 50, 50], [130, 210, 40]);
     Primitives.circleTrig(renderingContext, 515, 315, 100, [255, 255, 255], [20, 70, 250], [100, 50, 150], [0, 50, 120]);
-    // Primitives.circleBres2(renderingContext, 720, 315, 100, [100, 210, 0], [20, 32, 200]);
+    Primitives.circleBres2(renderingContext, 720, 315, 100, [100, 210, 0], [20, 32, 200], [80, 190, 70], [200, 100, 50]);
     Primitives.circleBres3(renderingContext, 925, 315, 100, [255, 0, 0], [255, 255, 0], [0, 200, 0], [0, 0, 100]);
     
 

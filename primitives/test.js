@@ -312,9 +312,11 @@ var Primitives = {
             for (var i = -x; i < x; i++) {
                 cColor = [lColor[0], lColor[1], lColor[2]];
                 vDelta = [(rColor[0] - lColor[0]) / circleHeight, (rColor[1] - lColor[1]) / circleHeight, (rColor[2] - lColor[2]) / circleHeight];
+                // this.setPixel(context, xc - i, yc + y, cColor[0], cColor[1], cColor[2]);
+                // this.setPixel(context, xc - i, yc - y, cColor[0], cColor[1], cColor[2]);
+
                 for (var j = -y; j < y; j++) {
                     this.setPixel(context, xc - i, yc - j, cColor[0], cColor[1], cColor[2]);
-                    this.setPixel(context, xc - i, yc - i, cColor[0], cColor[1], cColor[2]);
 
                     cColor[0] += vDelta[0];
                     cColor[1] += vDelta[1];
@@ -328,6 +330,7 @@ var Primitives = {
                 lColor[1] += rVDelta[1];
                 lColor[2] += rVDelta[2];
             }
+
 
             // for (var i = -x; i < x; i++) {
             //     cColor = [lColor[0], lColor[1], lColor[2]];
@@ -348,7 +351,7 @@ var Primitives = {
             //     lColor[2] += rVDelta[2];
             // }
 
-            // //Used to figure out what amount of each color is used for the gradient
+            //Used to figure out what amount of each color is used for the gradient
             // var circleHeight = r * 2,
             //     negY = (r - y) / circleHeight,
             //     posY = (r + y) / circleHeight,
@@ -356,21 +359,21 @@ var Primitives = {
             //     posX = (r + x) / circleHeight;
 
             // for (var i = -x; i < x; i++) {
-            //     this.setPixel(context, xc - i, yc + y, (((color1[0] * posY) + color2[0] * negY) + ((color3[0] * negY) + color4[0] * posY)),
-            //                                            (((color1[1] * posY) + color2[1] * negY) + ((color3[1] * negY) + color4[1] * posY)),
-            //                                            (((color1[2] * posY) + color2[2] * negY) + ((color3[2] * negY) + color4[2] * posY)));
-            //     this.setPixel(context, xc - i, yc - y, (((color1[0] * negY) + color2[0] * posY) + ((color3[0] * posY) + color4[0] * negY)), 
-            //                                            (((color1[1] * negY) + color2[1] * posY) + ((color3[0] * posY) + color4[0] * negY)), 
-            //                                            (((color1[2] * negY) + color2[2] * posY) + ((color3[0] * posY) + color4[0] * negY)));
+            //     this.setPixel(context, xc - i, yc + y, ((color1[0] * posY) + color2[0] * negY),
+            //                                            ((color1[1] * posY) + color2[1] * negY),
+            //                                            ((color1[2] * posY) + color2[2] * negY));
+            //     this.setPixel(context, xc - i, yc - y, ((color1[0] * negY) + color2[0] * posY), 
+            //                                            ((color1[1] * negY) + color2[1] * posY), 
+            //                                            ((color1[2] * negY) + color2[2] * posY));
             // }
 
             // for (var i = -y; i < y; i++) { 
-            //     this.setPixel(context, xc - i, yc + x, (((color1[0] * posX) + color2[0] * negX) + ((color3[0] * posX) + color4[0] * negX)),
-            //                                            (((color1[1] * posX) + color2[1] * negX) + ((color3[1] * posX) + color4[1] * negX)),
-            //                                            (((color1[2] * posX) + color2[2] * negX) + ((color3[2] * posX) + color4[2] * negX)));
-            //     this.setPixel(context, xc - i, yc - x, (((color1[0] * negX) + color2[0] * posX) + ((color3[0] * negX) + color4[0] * posX)), 
-            //                                            (((color1[1] * negX) + color2[1] * posX) + ((color3[0] * negX) + color4[0] * posX)), 
-            //                                            (((color1[2] * negX) + color2[2] * posX) + ((color3[0] * negX) + color4[0] * posX)));
+            //     this.setPixel(context, xc - i, yc + x, ((color1[0] * posX) + color2[0] * negX),
+            //                                            ((color1[1] * posX) + color2[1] * negX),
+            //                                            ((color1[2] * posX) + color2[2] * negX));
+            //     this.setPixel(context, xc - i, yc - x, ((color1[0] * negX) + color2[0] * posX), 
+            //                                            ((color1[1] * negX) + color2[1] * posX), 
+            //                                            ((color1[2] * negX) + color2[2] * posX));
             // }
         }
     },
@@ -395,13 +398,13 @@ var Primitives = {
     },
 
     // Now DDA.
-    circleDDA: function (context, xc, yc, r, color1, color2) {
+    circleDDA: function (context, xc, yc, r, color1, color2, color3, color4) {
         var epsilon = 1 / r,
             x = r,
             y = 0;
 
         while (x >= y) {
-            this.plotCirclePoints(context, xc, yc, x, y, r, color1, color2);
+            this.plotCirclePoints(context, xc, yc, x, y, r, color1, color2, color3, color4);
             x = x - (epsilon * y);
             y = y + (epsilon * x);
         }
@@ -429,7 +432,7 @@ var Primitives = {
     },
 
     // And another...
-    circleBres2: function (context, xc, yc, r, color1, color2) {
+    circleBres2: function (context, xc, yc, r, color1, color2, color3, color4) {
         var x = 0,
             y = r,
             e = 1 - r,
@@ -437,7 +440,7 @@ var Primitives = {
             v = e - r;
 
         while (x <= y) {
-            this.plotCirclePoints(context, xc, yc, x, y, r, color1, color2);
+            this.plotCirclePoints(context, xc, yc, x, y, r, color1, color2, color3, color4);
             if (e < 0) {
                 x += 1;
                 u += 2;

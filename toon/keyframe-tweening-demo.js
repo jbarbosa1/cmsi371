@@ -218,7 +218,7 @@
                     },
 
                     {
-                        frame: 600,
+                        frame: 610,
                         tx: 680,
                         ty: 250,
                         sx: .75,
@@ -301,10 +301,10 @@
     var poot = new Audio('../sprites/pooted.mp3');
     var bloo = new Audio('../sprites/bloo.mp3');
 
-    setTimeout(mattress, 10000);
-    setTimeout(notNow, 19400);
-    setTimeout(now, 19600);
-    setTimeout(playIt, 30500);
+    setTimeout(mattress, 8700);
+    setTimeout(notNow, 18500);
+    setTimeout(now, 18500);
+    setTimeout(playIt, 30000);
 
     function mattress() {
         bloo.play();
