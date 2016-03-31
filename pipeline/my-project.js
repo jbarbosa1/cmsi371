@@ -188,17 +188,37 @@
         // },
 
         new Shape({
-            vertices: new Shape(Shape.sphere()).toRawLineArray(),
             color: { r: 0.0, g: 0.5, b: 0.0 },
+            vertices: new Shape(Shape.sphere()).toRawLineArray(),
             mode: gl.LINES,
             axis: { x: 1.0, y: 1.0, z: 1.0 },
+            sx: 0.3,
+            sy: 0.3,
+            sz: 0.3,
+            tx: -0.5,
+            rx: -1,
+            ry: -1,
+            rz: -1,
             children: [new Shape({
                 color: { r: 0.5, g: 0.0, b: 0.5 },
                 vertices: new Shape(Shape.pyramid()).toRawTriangleArray(),
                 mode: gl.TRIANGLES,
                 axis: { x: 0.0, y: 1.0, z: 1.0 },
+                sx: 0.3,
+                sy: 0.3,
+                sz: 0.3,
+                angle: 180,
+                rx: 0.01,
+                ry: 0.01,
+                rz: 0.01,
                 children: [new Shape({
                     vertices: new Shape(Shape.triangularPrism()).toRawTriangleArray(),
+                    sx: 0.3,
+                    sy: 0.3,
+                    sz: 0.3,
+                    tx: 0.5,
+                    rx: 3,
+                    rz: 3,
                     color: { r: 1.0, g: 0.0, b: 0.0 },
                     mode: gl.TRIANGLES,
                     axis: { x: -0.5, y: 1.0, z: 0.0 }
@@ -274,13 +294,42 @@
     // Finally, we come to the typical setup for transformation matrices:
     // model-view and projection, managed separately.
     modelViewMatrix = gl.getUniformLocation(shaderProgram, "modelViewMatrix");
+    rotationMatrix = gl.getUniformLocation(shaderProgram, "rotationMatrix");
     projectionMatrix = gl.getUniformLocation(shaderProgram, "projectionMatrix");
+    translationMatrix = gl.getUniformLocation(shaderProgram, "translationMatrix");
+    scaleMatrix = gl.getUniformLocation(shaderProgram, "scaleMatrix");
+    orthoMatrix = gl.getUniformLocation(shaderProgram, "orthoMatrix");
+
+    gl.uniformMatrix4fv(projectionMatrix, 
+        gl.FALSE,
+        new Float32Array(Matrix.frustrum(-2, 2, 2, -2, 20, 2000).toGL())
+    );
+
+    // Initialize scale matrix
+    gl.uniformMatrix4fv(scaleMatrix, 
+        gl.FALSE, 
+        new Float32Array(Matrix.scale(1, 1, 1).toGL())
+    );
+
+    // Initialize translation matrix
+    gl.uniformMatrix4fv(translationMatrix, 
+        gl.FALSE, 
+        new Float32Array(Matrix.translation(0, 0, 0).toGL())
+    );
+
+    // gl.uniformMatrix4fv(rotationMatrix,
+    //     gl.FALSE,
+    //     new Float32Array(Matrix.getRotationMatrix(0, 1, 1, 1).toGL())
+    // );
 
     /*
      * Displays an individual object, including a transformation that now varies
      * for each object drawn.
      */
     drawObject = function (object) {
+        var i;
+        // console.log(object);
+
         // Set the varying colors.
         gl.bindBuffer(gl.ARRAY_BUFFER, object.colorBuffer);
         gl.vertexAttribPointer(vertexColor, 3, gl.FLOAT, false, 0, 0);
@@ -288,17 +337,38 @@
         // Set up the model-view matrix, if an axis is included.  If not, we
         // specify the identity matrix.
         gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(object.axis ?
-                new Matrix().getRotationMatrix(currentRotation, object.axis.x, object.axis.y, object.axis.z).elements :
+                Matrix.getRotationMatrix(currentRotation, object.axis.x, object.axis.y, object.axis.z).elements :
                 new Matrix().elements
             ));
+
+        var exmatrixMatrix = new Matrix();
+        // console.log(object.rx);
+
+        exmatrixMatrix = exmatrixMatrix.multiplication(
+            Matrix.translation(
+                object.tx || 0, object.ty || 0, object.tz || 0
+            )).multiplication(
+                Matrix.scale(
+                    object.sx || 1, object.sy || 1, object.sz || 1
+            )).multiplication(
+                Matrix.getRotationMatrix(
+                    object.angle || 0, object.rx || 1, object.ry || 1, object.rz || 1
+            ));
+
+        // console.log(exmatrixMatrix);
+
+        gl.uniformMatrix4fv(gl.getUniformLocation(shaderProgram, "projectionMatrix"),
+            gl.FALSE,
+            new Float32Array(exmatrixMatrix.toGL())
+        );
 
         // Set the varying vertex coordinates.
         gl.bindBuffer(gl.ARRAY_BUFFER, object.buffer);
         gl.vertexAttribPointer(vertexPosition, 3, gl.FLOAT, false, 0, 0);
         gl.drawArrays(object.mode, 0, object.vertices.length / 3);
 
-        if (object.children) {
-            for (i = 0; i < object.children.length; i += 1) {
+        if (object.children.length != 0) {
+            for(i = 0; i < object.children.length; i++){
                 drawObject(object.children[i]);
             }
         }
@@ -310,6 +380,11 @@
     drawScene = function () {
         // Clear the display.
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        gl.uniformMatrix4fv(rotationMatrix,
+            gl.FALSE,
+            new Float32Array(Matrix.getRotationMatrix(0, 1, 1, 1).toGL())
+        );
 
         // Display the objects.
         for (i = 0, maxi = objectsToDraw.length; i < maxi; i += 1) {
@@ -326,7 +401,7 @@
     // We keep the vertical range fixed, but change the horizontal range
     // according to the aspect ratio of the canvas.  We can also expand
     // the z range now.
-    gl.uniformMatrix4fv(projectionMatrix, gl.FALSE, new Float32Array(new Matrix().getOrthoMatrix(
+    gl.uniformMatrix4fv(projectionMatrix, gl.FALSE, new Float32Array(Matrix.getOrthoMatrix(
         -2 * (canvas.width / canvas.height),
         2 * (canvas.width / canvas.height),
         -2,

@@ -10,13 +10,23 @@
         this.x = shapeFeatures.x || 0;
         this.y = shapeFeatures.y || 0;
         this.z = shapeFeatures.z || 0;
-        this.vertices = shapeFeatures.vertices || [];
-        this.indices = shapeFeatures.indices || [];
         this.children = shapeFeatures.children || [];
         this.color = shapeFeatures.color || {r: 0.0, g: 0.0, b:0.0};
         this.colors = shapeFeatures.colors || null;
         this.mode = shapeFeatures.mode;
         this.axis = shapeFeatures.axis || {x: 0.0, y: 0.0, z: 0.0};
+        this.sx = shapeFeatures.sx || 1;
+        this.sy = shapeFeatures.sy || 1;
+        this.sz = shapeFeatures.sz || 1;
+        this.tx = shapeFeatures.tx || 0;
+        this.ty = shapeFeatures.ty || 0;
+        this.tz = shapeFeatures.tz || 0;
+        this.angle = shapeFeatures.angle || 0;
+        this.rx = shapeFeatures.rx || 1;
+        this.ry = shapeFeatures.ry || 1;
+        this.rz = shapeFeatures.rz || 1;
+        this.vertices = shapeFeatures.vertices || [];
+        this.indices = shapeFeatures.indices || [];
     };
 
     Shape.icosahedron = function() {
@@ -125,12 +135,12 @@
 
     Shape.sphere = function () {
         var radius = 1.1,
-            verticalBars = 25,
-            horizontalBars = 25,
+            verticalBars = 32,
+            horizontalBars = 32,
             vertices = [],
             indices = [];
 
-        for (var i = 0; i < verticalBars + 1; i += 1) {
+         for (var i = 0; i < verticalBars + 1; i += 1) {
             var theta = (i * Math.PI) / verticalBars;
             var sinTheta = Math.sin(theta);
             var cosTheta = Math.cos(theta);
@@ -148,14 +158,13 @@
         for (var i = 0; i < verticalBars; i += 1) {
 
             for (var j = 0; j < horizontalBars; j += 1) {
-                var bottom = top + horizontalBars + 1;
                 var top = (i * (horizontalBars + 1)) + j;
+                var bottom = top + horizontalBars + 1;
 
-                indices.push([bottom, bottom + 1, top + 1]);
                 indices.push([top, bottom, top + 1]);
+                indices.push([bottom, bottom + 1, top + 1]);
             }
         }
-
 
         return {
             vertices: vertices,

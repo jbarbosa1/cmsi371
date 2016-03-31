@@ -42,7 +42,7 @@
         return result;
     };
 
-    Matrix.prototype.translation = function (xDiff, yDiff, zDiff) {
+    Matrix.translation = function (xDiff, yDiff, zDiff) {
     	return new Matrix(
     		1, 0 , 0 , xDiff,
             0 , 1, 0 , yDiff,
@@ -51,7 +51,7 @@
     	);
     };
 
-    Matrix.prototype.scale = function (sx, sy, sz) {
+    Matrix.scale = function (sx, sy, sz) {
     	return new Matrix(
     	    sx, 0, 0, 0,
             0, sy, 0, 0,
@@ -60,7 +60,7 @@
         );
     };
 
-    Matrix.prototype.frustrum = function (right, left, top, bottom, near, far) {
+    Matrix.frustrum = function (right, left, top, bottom, near, far) {
     	return new Matrix(
             ((2 * near) / (right - left)), 0 , ((right + left) / (right - left)), 0,
             0, ((2 * near) / (top - bottom)), ((top + bottom) / (top - bottom)), 0,
@@ -78,7 +78,7 @@
      * Based on the original glRotate reference:
      *     http://www.opengl.org/sdk/docs/man/xhtml/glRotate.xml
      */
-    Matrix.prototype.getRotationMatrix = function (angle, x, y, z) {
+    Matrix.getRotationMatrix = function (angle, x, y, z) {
         // In production code, this function should be associated
         // with a matrix object with associated functions.
         var axisLength = Math.sqrt((x * x) + (y * y) + (z * z));
@@ -144,7 +144,7 @@
      * is part of the student course work, we leave it here for
      * later refactoring and adaptation by students.
      */
-    Matrix.prototype.getOrthoMatrix = function (left, right, bottom, top, zNear, zFar) {
+    Matrix.getOrthoMatrix = function (left, right, bottom, top, zNear, zFar) {
         var width = right - left;
         var height = top - bottom;
         var depth = zFar - zNear;
