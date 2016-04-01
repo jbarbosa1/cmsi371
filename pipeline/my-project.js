@@ -192,30 +192,30 @@
             vertices: new Shape(Shape.sphere()).toRawLineArray(),
             mode: gl.LINES,
             axis: { x: 1.0, y: 1.0, z: 1.0 },
-            sx: 0.3,
-            sy: 0.3,
-            sz: 0.3,
+            sx: 0.2,
+            sy: 0.2,
+            sz: 0.2,
             tx: -0.5,
-            rx: -1,
-            ry: -1,
-            rz: -1,
+            rx: 0.1,
+            ry: 1,
+            rz: 0.1,
             children: [new Shape({
                 color: { r: 0.5, g: 0.0, b: 0.5 },
                 vertices: new Shape(Shape.pyramid()).toRawTriangleArray(),
                 mode: gl.TRIANGLES,
                 axis: { x: 0.0, y: 1.0, z: 1.0 },
-                sx: 0.3,
-                sy: 0.3,
-                sz: 0.3,
+                sx: 0.2,
+                sy: 0.2,
+                sz: 0.2,
                 angle: 180,
-                rx: 0.01,
-                ry: 0.01,
-                rz: 0.01,
+                rx: 0.1,
+                ry: 0.1,
+                rz: 0.1,
                 children: [new Shape({
                     vertices: new Shape(Shape.triangularPrism()).toRawTriangleArray(),
-                    sx: 0.3,
-                    sy: 0.3,
-                    sz: 0.3,
+                    sx: 0.1,
+                    sy: 0.1,
+                    sz: 0.1,
                     tx: 0.5,
                     rx: 3,
                     rz: 3,
@@ -229,7 +229,7 @@
 
     // Pass the vertices to WebGL.
     babysitter = function(objectsToDraw) {
-        var i;
+        // var i;
         for (i = 0, maxi = objectsToDraw.length; i < maxi; i += 1) {
             objectsToDraw[i].buffer = GLSLUtilities.initVertexBuffer(gl,
                     objectsToDraw[i].vertices);
@@ -250,7 +250,7 @@
             objectsToDraw[i].colorBuffer = GLSLUtilities.initVertexBuffer(gl,
                     objectsToDraw[i].colors);
 
-            if (objectsToDraw[i].children && (objectsToDraw[i].children.length != 0)) {
+            if (objectsToDraw[i].children.length != 0) {
                 babysitter(objectsToDraw[i].children);
             }
         }
@@ -327,7 +327,7 @@
      * for each object drawn.
      */
     drawObject = function (object) {
-        var i;
+        // var i;
         // console.log(object);
 
         // Set the varying colors.
@@ -381,10 +381,10 @@
         // Clear the display.
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        gl.uniformMatrix4fv(rotationMatrix,
-            gl.FALSE,
-            new Float32Array(Matrix.getRotationMatrix(0, 1, 1, 1).toGL())
-        );
+        // gl.uniformMatrix4fv(rotationMatrix,
+        //     gl.FALSE,
+        //     new Float32Array(Matrix.getRotationMatrix(0, 1, 1, 1).toGL())
+        // );
 
         // Display the objects.
         for (i = 0, maxi = objectsToDraw.length; i < maxi; i += 1) {
