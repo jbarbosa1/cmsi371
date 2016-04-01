@@ -195,7 +195,7 @@
             sx: 0.2,
             sy: 0.2,
             sz: 0.2,
-            tx: -0.5,
+            tx: -0.8,
             rx: 0.1,
             ry: 1,
             rz: 0.1,
@@ -216,7 +216,7 @@
                     sx: 0.1,
                     sy: 0.1,
                     sz: 0.1,
-                    tx: 0.5,
+                    tx: 0.9,
                     rx: 3,
                     rz: 3,
                     color: { r: 1.0, g: 0.0, b: 0.0 },
@@ -359,7 +359,7 @@
 
         gl.uniformMatrix4fv(gl.getUniformLocation(shaderProgram, "projectionMatrix"),
             gl.FALSE,
-            new Float32Array(exmatrixMatrix.toGL())
+            exmatrixMatrix.toGL()
         );
 
         // Set the varying vertex coordinates.
@@ -401,14 +401,14 @@
     // We keep the vertical range fixed, but change the horizontal range
     // according to the aspect ratio of the canvas.  We can also expand
     // the z range now.
-    gl.uniformMatrix4fv(projectionMatrix, gl.FALSE, new Float32Array(Matrix.getOrthoMatrix(
+    gl.uniformMatrix4fv(projectionMatrix, gl.FALSE, Matrix.getOrthoMatrix(
         -2 * (canvas.width / canvas.height),
         2 * (canvas.width / canvas.height),
         -2,
         2,
         -10,
         10
-    ).elements));
+    ).toGL());
 
     babysitter(objectsToDraw);
 

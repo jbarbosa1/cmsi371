@@ -146,7 +146,7 @@ $(function () {
 
     test("Translate, Scale, and Rotate", function() {
 
-        var m = new Matrix().translation(3,3,3);
+        var m = Matrix.translation(3,3,3);
 
         equal(m.dimensions(), 16, "Matrix size");
         equal(m.elements[0], 1, "First element by index");
@@ -167,7 +167,7 @@ $(function () {
         equal(m.elements[15], 1, "Sixteenth element by index");
 
 
-        m = new Matrix().scale(3, 1, 4);
+        m = Matrix.scale(3, 1, 4);
 
         equal(m.dimensions(), 16, "Matrix size");
         equal(m.elements[0], 3, "First element by index");
@@ -187,7 +187,7 @@ $(function () {
         equal(m.elements[14], 0, "Fifteenth element by index");
         equal(m.elements[15], 1, "Sixteenth element by index");
 
-        m = new Matrix().getRotationMatrix(180, .5, -.5, .5);
+        m = Matrix.getRotationMatrix(180, .5, -.5, .5);
 
         equal(m.dimensions(), 16, "Matrix size");
         equal(m.elements[0], -0.33333333333333315, "First element by index");
@@ -210,7 +210,7 @@ $(function () {
     });
 
     test("Frustrum and Ortho", function() {
-        var m = new Matrix().frustrum(2, -2, 2, -2, -2, 2);
+        var m = Matrix.frustrum(2, -2, 2, -2, -2, 2);
 
         equal(m.dimensions(), 16, "Matrix size");
         equal(m.elements[0], -1, "First element by index");
@@ -230,7 +230,7 @@ $(function () {
         equal(m.elements[14], -1, "Fifteenth element by index");
         equal(m.elements[15], 0, "Sixteenth element by index");
 
-        m = new Matrix().frustrum(2, -2, 2, -2, 2, -5000);
+        m = Matrix.frustrum(2, -2, 2, -2, 2, -5000);
 
         equal(m.dimensions(), 16, "Matrix size");
         equal(m.elements[0], 1, "First element by index");
@@ -250,7 +250,7 @@ $(function () {
         equal(m.elements[14], -1, "Fifteenth element by index");
         equal(m.elements[15], 0, "Sixteenth element by index");
 
-        m = new Matrix().frustrum(10, -20, 18, -200, -10, 2500);
+        m = Matrix.frustrum(10, -20, 18, -200, -10, 2500);
 
         equal(m.dimensions(), 16, "Matrix size");
         equal(m.elements[0], -0.6666666666666666, "First element by index");
@@ -270,7 +270,7 @@ $(function () {
         equal(m.elements[14], -1, "Fifteenth element by index");
         equal(m.elements[15], 0, "Sixteenth element by index");
 
-        m = new Matrix().getOrthoMatrix(2, -2, 2, -2, -2, 2);
+        m = Matrix.getOrthoMatrix(2, -2, 2, -2, -2, 2);
 
         equal(m.dimensions(), 16, "Matrix size");
         equal(m.elements[0], -0.5, "First element by index");
