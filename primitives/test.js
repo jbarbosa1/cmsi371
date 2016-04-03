@@ -123,10 +123,6 @@ var Primitives = {
             // there are only three colors.
             c4 = c4 || c3;
 
-            // In primitives, one tends to see repeated code more
-            // often than function calls, because this is the rare
-            // situation where function call overhead costs more
-            // than repeated code.
             leftVDelta = [(c3[0] - c1[0]) / h,
                       (c3[1] - c1[1]) / h,
                       (c3[2] - c1[2]) / h];
@@ -201,8 +197,6 @@ var Primitives = {
             }
 
             x += 1;
-            // Note how this is "multiplying 2 * dx to both sides" when
-            // compared to Bresenham 1.
             err += (2 * dy);
             if (err >= dx) {
                 y -= 1;
@@ -227,8 +221,7 @@ var Primitives = {
             }
 
             x += 1;
-            // This one does the comparison first, then adjusts err
-            // based on that comparison.
+        
             if (err >= dx - 2 * dy) {
                 y -= 1;
                 err += (2 * dy - 2 * dx);
@@ -238,10 +231,6 @@ var Primitives = {
         }
     },
 
-    // The final, optimized Bresenham algorithm: here, we presave
-    // most values, and adjust them to compare only to zero.
-    // A dash parameter has been added that draws the specified number of pixels (dashes)
-    // before skipping one pixel.
     lineBresenham: function (context, x1, y1, x2, y2, dash, color) {
         var x = x1,
             y = y1,
@@ -254,12 +243,10 @@ var Primitives = {
 
         color = color || [0, 0, 0];
         while (true) {
-            if (counter > 0) { // Or just "if (counter) {..."
-                // Odd...this indent is by 2 but the else clause is by 4...?
-                //     (and of course the rest of the code indents by 4)
+            if (counter > 0) {
               this.setPixel(context, x, y, color[0], color[1], color[2]);
               counter--;
-            } else if (counter == 0) { // Then "else" by itself :)
+            } else if (counter == 0) { 
                 counter = dash;
             }
 
@@ -302,21 +289,19 @@ var Primitives = {
         } else {
 
             var circleHeight = r * 2,
-                negY = (r - y) / circleHeight,
-                posY = (r + y) / circleHeight,
-                negX = (r - x) / circleHeight,
-                posX = (r + x) / circleHeight,
                 lVDelta = [(color3[0] - color1[0]) / circleHeight, (color3[1] - color1[1]) / circleHeight, (color3[2] - color1[2]) / circleHeight],
                 rVDelta = [(color4[0] - color2[0]) / circleHeight, (color4[1] - color2[1]) / circleHeight, (color4[2] - color2[2]) / circleHeight];
 
-            for (var i = -x; i < x; i++) {
+            for (var i = -r; i < r; i++) {
                 cColor = [lColor[0], lColor[1], lColor[2]];
                 vDelta = [(rColor[0] - lColor[0]) / circleHeight, (rColor[1] - lColor[1]) / circleHeight, (rColor[2] - lColor[2]) / circleHeight];
-                // this.setPixel(context, xc - i, yc + y, cColor[0], cColor[1], cColor[2]);
-                // this.setPixel(context, xc - i, yc - y, cColor[0], cColor[1], cColor[2]);
 
-                for (var j = -y; j < y; j++) {
-                    this.setPixel(context, xc - i, yc - j, cColor[0], cColor[1], cColor[2]);
+                for (var j = -r; j < r; j++) {
+                    var distance = Math.sqrt(Math.pow((i), 2) + Math.pow((j), 2));
+                    if(distance < r) {
+
+                        this.setPixel(context, xc - i, yc - j, cColor[0], cColor[1], cColor[2]);
+                    }
 
                     cColor[0] += vDelta[0];
                     cColor[1] += vDelta[1];
@@ -330,51 +315,6 @@ var Primitives = {
                 lColor[1] += rVDelta[1];
                 lColor[2] += rVDelta[2];
             }
-
-
-            // for (var i = -x; i < x; i++) {
-            //     cColor = [lColor[0], lColor[1], lColor[2]];
-            //     vDelta = [(rColor[0] - lColor[0]) / circleHeight, (rColor[1] - lColor[1]) / circleHeight, (rColor[2] - lColor[2]) / circleHeight];
-                // for (var j = -y; j < y; j++) {
-                // this.setPixel(context, xc - i, yc - i, cColor[0], cColor[1], cColor[2]);
-
-                // cColor[0] += vDelta[0];
-                // cColor[1] += vDelta[1];
-                // cColor[2] += vDelta[2];
-                // }
-
-            //     lColor[0] += lVDelta[0];
-            //     lColor[1] += lVDelta[1];
-            //     lColor[2] += lVDelta[2];
-            //     lColor[0] += rVDelta[0];
-            //     lColor[1] += rVDelta[1];
-            //     lColor[2] += rVDelta[2];
-            // }
-
-            //Used to figure out what amount of each color is used for the gradient
-            // var circleHeight = r * 2,
-            //     negY = (r - y) / circleHeight,
-            //     posY = (r + y) / circleHeight,
-            //     negX = (r - x) / circleHeight,
-            //     posX = (r + x) / circleHeight;
-
-            // for (var i = -x; i < x; i++) {
-            //     this.setPixel(context, xc - i, yc + y, ((color1[0] * posY) + color2[0] * negY),
-            //                                            ((color1[1] * posY) + color2[1] * negY),
-            //                                            ((color1[2] * posY) + color2[2] * negY));
-            //     this.setPixel(context, xc - i, yc - y, ((color1[0] * negY) + color2[0] * posY), 
-            //                                            ((color1[1] * negY) + color2[1] * posY), 
-            //                                            ((color1[2] * negY) + color2[2] * posY));
-            // }
-
-            // for (var i = -y; i < y; i++) { 
-            //     this.setPixel(context, xc - i, yc + x, ((color1[0] * posX) + color2[0] * negX),
-            //                                            ((color1[1] * posX) + color2[1] * negX),
-            //                                            ((color1[2] * posX) + color2[2] * negX));
-            //     this.setPixel(context, xc - i, yc - x, ((color1[0] * negX) + color2[0] * posX), 
-            //                                            ((color1[1] * negX) + color2[1] * posX), 
-            //                                            ((color1[2] * negX) + color2[2] * posX));
-            // }
         }
     },
 
