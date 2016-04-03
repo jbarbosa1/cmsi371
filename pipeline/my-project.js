@@ -328,7 +328,6 @@
      */
     drawObject = function (object) {
         // var i;
-        // console.log(object);
 
         // Set the varying colors.
         gl.bindBuffer(gl.ARRAY_BUFFER, object.colorBuffer);
@@ -346,13 +345,13 @@
 
         exmatrixMatrix = exmatrixMatrix.multiplication(
             Matrix.translation(
-                object.tx || 0, object.ty || 0, object.tz || 0
+                object.tx, object.ty, object.tz
             )).multiplication(
                 Matrix.scale(
-                    object.sx || 1, object.sy || 1, object.sz || 1
+                    object.sx, object.sy, object.sz
             )).multiplication(
                 Matrix.getRotationMatrix(
-                    object.angle || 0, object.rx || 1, object.ry || 1, object.rz || 1
+                    object.angle, object.rx, object.ry, object.rz
             ));
 
         // console.log(exmatrixMatrix);

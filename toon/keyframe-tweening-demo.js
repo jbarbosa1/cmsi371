@@ -301,9 +301,9 @@
     var poot = new Audio('../sprites/pooted.mp3');
     var bloo = new Audio('../sprites/bloo.mp3');
 
-    setTimeout(mattress, 8700);
-    setTimeout(notNow, 18500);
-    setTimeout(now, 18500);
+    setTimeout(mattress, 8400);
+    setTimeout(notNow, 18300);
+    setTimeout(now, 18250);
     setTimeout(playIt, 30000);
 
     function mattress() {
