@@ -231,7 +231,7 @@
                 rz: 0.1,
                 specularColor: {r: 1.0, g: 1.0, b: 1.0},
                 shininess: 16,
-                normals: new Shape(Shape.pyramid()).toVertexNormalArray,
+                normals: new Shape(Shape.pyramid()).toVertexNormalArray(),
                 children: [new Shape({
                     vertices: new Shape(Shape.triangularPrism()).toRawTriangleArray(),
                     sx: 0.1,
@@ -242,7 +242,7 @@
                     rz: 3,
                     specularColor: {r: 1.0, g: 1.0, b: 1.0},
                     shininess: 16,
-                    normals: new Shape(Shape.pyramid()).toVertexNormalArray,
+                    normals: new Shape(Shape.triangularPrism()).toVertexNormalArray(),
                     color: { r: 1.0, g: 0.0, b: 0.0 },
                     mode: gl.TRIANGLES,
                     axis: { x: -0.5, y: 1.0, z: 0.0 }
@@ -426,14 +426,14 @@
             exmatrixMatrix.toGL()
         );
 
+        // Set the varying normal vectors.
+        gl.bindBuffer(gl.ARRAY_BUFFER, object.normalBuffer);
+        gl.vertexAttribPointer(normalVector, 3, gl.FLOAT, false, 0, 0);
+
         // Set the varying vertex coordinates.
         gl.bindBuffer(gl.ARRAY_BUFFER, object.buffer);
         gl.vertexAttribPointer(vertexPosition, 3, gl.FLOAT, false, 0, 0);
         gl.drawArrays(object.mode, 0, object.vertices.length / 3);
-
-        // Set the varying normal vectors.
-        gl.bindBuffer(gl.ARRAY_BUFFER, object.normalBuffer);
-        gl.vertexAttribPointer(normalVector, 3, gl.FLOAT, false, 0, 0);
 
         if (object.children.length != 0) {
             for(i = 0; i < object.children.length; i++){
