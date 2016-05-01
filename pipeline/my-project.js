@@ -24,8 +24,21 @@
     var currentInterval;
     var modelViewMatrix;
     var projectionMatrix;
+    var scaleMatrix;
+    var rotationMatrix;
+    var cameraMatrix;
     var vertexPosition;
-    var vertexColor;
+    var vertexSpecularColor;
+    var shininess;
+    var vertexDiffuseColor;
+
+    // Lighting variables
+    var normalVector;
+    var lightPosition;
+    var lightDiffuse;
+    var lightSpecular;
+
+    var babysitter;
 
     // An individual "draw object" function.
     var drawObject;
@@ -189,16 +202,21 @@
 
         new Shape({
             color: { r: 0.0, g: 0.5, b: 0.0 },
-            vertices: new Shape(Shape.sphere()).toRawLineArray(),
-            mode: gl.LINES,
-            axis: { x: 1.0, y: 1.0, z: 1.0 },
+            vertices: new Shape(Shape.sphere()).toRawTriangleArray(),
+            mode: gl.TRIANGLES,
+            // axis: { x: 1.0, y: 1.0, z: 1.0 },
             sx: 0.2,
             sy: 0.2,
             sz: 0.2,
-            tx: -0.8,
+            tx: 0,
+            ty: 0.9,
+            tz: 5,
             rx: 0.1,
             ry: 1,
             rz: 0.1,
+            specularColor: {r:1.0, g: 1.0, b: 1.0},
+            shininess: 10,
+            normals: new Shape(Shape.sphere()).toVertexNormalArray(),
             children: [new Shape({
                 color: { r: 0.5, g: 0.0, b: 0.5 },
                 vertices: new Shape(Shape.pyramid()).toRawTriangleArray(),
@@ -211,6 +229,9 @@
                 rx: 0.1,
                 ry: 0.1,
                 rz: 0.1,
+                specularColor: {r: 1.0, g: 1.0, b: 1.0},
+                shininess: 16,
+                normals: new Shape(Shape.pyramid()).toVertexNormalArray,
                 children: [new Shape({
                     vertices: new Shape(Shape.triangularPrism()).toRawTriangleArray(),
                     sx: 0.1,
@@ -219,6 +240,9 @@
                     tx: 0.9,
                     rx: 3,
                     rz: 3,
+                    specularColor: {r: 1.0, g: 1.0, b: 1.0},
+                    shininess: 16,
+                    normals: new Shape(Shape.pyramid()).toVertexNormalArray,
                     color: { r: 1.0, g: 0.0, b: 0.0 },
                     mode: gl.TRIANGLES,
                     axis: { x: -0.5, y: 1.0, z: 0.0 }
@@ -247,8 +271,29 @@
                     );
                 }
             }
+
+            if (!objectsToDraw[i].specularColors) {
+            // Future refactor: helper function to convert a single value or
+            // array into an array of copies of itself.
+                objectsToDraw[i].specularColors = [];
+                for (j = 0, maxj = objectsToDraw[i].vertices.length / 3;
+                        j < maxj; j += 1) {
+                    objectsToDraw[i].specularColors = objectsToDraw[i].specularColors.concat(
+                        objectsToDraw[i].specularColor.r,
+                        objectsToDraw[i].specularColor.g,
+                        objectsToDraw[i].specularColor.b
+                    );
+                }
+            }
+
             objectsToDraw[i].colorBuffer = GLSLUtilities.initVertexBuffer(gl,
                     objectsToDraw[i].colors);
+
+            objectsToDraw[i].specularBuffer = GLSLUtilities.initVertexBuffer(gl,
+                objectsToDraw[i].specularColors);
+
+            objectsToDraw[i].normalBuffer = GLSLUtilities.initVertexBuffer(gl,
+                    objectsToDraw[i].normals);
 
             if (objectsToDraw[i].children.length != 0) {
                 babysitter(objectsToDraw[i].children);
@@ -288,8 +333,12 @@
     // Hold on to the important variables within the shaders.
     vertexPosition = gl.getAttribLocation(shaderProgram, "vertexPosition");
     gl.enableVertexAttribArray(vertexPosition);
-    vertexColor = gl.getAttribLocation(shaderProgram, "vertexColor");
-    gl.enableVertexAttribArray(vertexColor);
+    vertexDiffuseColor = gl.getAttribLocation(shaderProgram, "vertexDiffuseColor");
+    gl.enableVertexAttribArray(vertexDiffuseColor);
+    vertexSpecularColor = gl.getAttribLocation(shaderProgram, "vertexSpecularColor");
+    gl.enableVertexAttribArray(vertexSpecularColor);
+    normalVector = gl.getAttribLocation(shaderProgram, "normalVector");
+    gl.enableVertexAttribArray(normalVector);
 
     // Finally, we come to the typical setup for transformation matrices:
     // model-view and projection, managed separately.
@@ -299,49 +348,65 @@
     translationMatrix = gl.getUniformLocation(shaderProgram, "translationMatrix");
     scaleMatrix = gl.getUniformLocation(shaderProgram, "scaleMatrix");
     orthoMatrix = gl.getUniformLocation(shaderProgram, "orthoMatrix");
+    cameraMatrix = gl.getUniformLocation(shaderProgram, "cameraMatrix");
+
+    lightPosition = gl.getUniformLocation(shaderProgram, "lightPosition");
+    lightDiffuse = gl.getUniformLocation(shaderProgram, "lightDiffuse");
+    lightSpecular = gl.getUniformLocation(shaderProgram, "lightSpecular");
+    shininess = gl.getUniformLocation(shaderProgram, "shininess");
 
     gl.uniformMatrix4fv(projectionMatrix, 
         gl.FALSE,
-        new Float32Array(Matrix.frustrum(-2, 2, 2, -2, 20, 2000).toGL())
+        new Float32Array(Matrix.frustrum(-4, 4, 2, -2, 2, 1000).toGL())
     );
 
     // Initialize scale matrix
     gl.uniformMatrix4fv(scaleMatrix, 
         gl.FALSE, 
-        new Float32Array(Matrix.scale(1, 1, 1).toGL())
+        Matrix.scale(1, 1, 1).toGL()
     );
 
     // Initialize translation matrix
     gl.uniformMatrix4fv(translationMatrix, 
         gl.FALSE, 
-        new Float32Array(Matrix.translation(0, 0, 0).toGL())
+        Matrix.translation(0, 0, 0).toGL()
     );
 
     // gl.uniformMatrix4fv(rotationMatrix,
     //     gl.FALSE,
-    //     new Float32Array(Matrix.getRotationMatrix(0, 1, 1, 1).toGL())
+    //     Matrix.getRotationMatrix(0, 1, 1, 1).toGL()
     // );
+
+    gl.uniformMatrix4fv(cameraMatrix,
+        gl.FALSE,
+        Matrix.cameraMatrix(0, 0, 100, 0, 0, 0, 0, 1, 0).toGL()
+    );
 
     /*
      * Displays an individual object, including a transformation that now varies
      * for each object drawn.
      */
-    drawObject = function (object) {
+    drawObject = function (object, parent) {
         // var i;
 
         // Set the varying colors.
         gl.bindBuffer(gl.ARRAY_BUFFER, object.colorBuffer);
-        gl.vertexAttribPointer(vertexColor, 3, gl.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(vertexDiffuseColor, 3, gl.FLOAT, false, 0, 0);
+        gl.bindBuffer(gl.ARRAY_BUFFER, object.specularBuffer);
+        gl.vertexAttribPointer(vertexSpecularColor, 3, gl.FLOAT, false, 0, 0);
+        gl.bindBuffer(gl.ARRAY_BUFFER, object.normalBuffer);
+        gl.vertexAttribPointer(normalVector, 3, gl.FLOAT, false, 0, 0);
 
         // Set up the model-view matrix, if an axis is included.  If not, we
         // specify the identity matrix.
-        gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(object.axis ?
-                Matrix.getRotationMatrix(currentRotation, object.axis.x, object.axis.y, object.axis.z).elements :
-                new Matrix().elements
-            ));
+        // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(object.axis ?
+        //         Matrix.getRotationMatrix(currentRotation, object.axis.x, object.axis.y, object.axis.z).elements :
+        //         new Matrix().elements
+        //     ));
 
-        var exmatrixMatrix = new Matrix();
-        // console.log(object.rx);
+        gl.uniform1f(shininess, object.shininess);
+
+        var exmatrixMatrix = parent || new Matrix();
 
         exmatrixMatrix = exmatrixMatrix.multiplication(
             Matrix.translation(
@@ -351,12 +416,12 @@
                     object.sx, object.sy, object.sz
             )).multiplication(
                 Matrix.getRotationMatrix(
-                    object.angle, object.rx, object.ry, object.rz
+                    currentRotation, object.rx, object.ry, object.rz
             ));
 
         // console.log(exmatrixMatrix);
 
-        gl.uniformMatrix4fv(gl.getUniformLocation(shaderProgram, "projectionMatrix"),
+        gl.uniformMatrix4fv(projectionMatrix,
             gl.FALSE,
             exmatrixMatrix.toGL()
         );
@@ -366,9 +431,13 @@
         gl.vertexAttribPointer(vertexPosition, 3, gl.FLOAT, false, 0, 0);
         gl.drawArrays(object.mode, 0, object.vertices.length / 3);
 
+        // Set the varying normal vectors.
+        gl.bindBuffer(gl.ARRAY_BUFFER, object.normalBuffer);
+        gl.vertexAttribPointer(normalVector, 3, gl.FLOAT, false, 0, 0);
+
         if (object.children.length != 0) {
             for(i = 0; i < object.children.length; i++){
-                drawObject(object.children[i]);
+                drawObject(object.children[i], exmatrixMatrix);
             }
         }
     };
@@ -380,10 +449,10 @@
         // Clear the display.
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        // gl.uniformMatrix4fv(rotationMatrix,
-        //     gl.FALSE,
-        //     new Float32Array(Matrix.getRotationMatrix(0, 1, 1, 1).toGL())
-        // );
+        gl.uniformMatrix4fv(rotationMatrix,
+            gl.FALSE,
+            Matrix.getRotationMatrix(0, 1, 1, 1).toGL()
+        );
 
         // Display the objects.
         for (i = 0, maxi = objectsToDraw.length; i < maxi; i += 1) {
@@ -400,16 +469,20 @@
     // We keep the vertical range fixed, but change the horizontal range
     // according to the aspect ratio of the canvas.  We can also expand
     // the z range now.
-    gl.uniformMatrix4fv(projectionMatrix, gl.FALSE, Matrix.getOrthoMatrix(
-        -2 * (canvas.width / canvas.height),
-        2 * (canvas.width / canvas.height),
-        -2,
-        2,
-        -10,
-        10
-    ).toGL());
+    // gl.uniformMatrix4fv(projectionMatrix, gl.FALSE, Matrix.getOrthoMatrix(
+    //     -2 * (canvas.width / canvas.height),
+    //     2 * (canvas.width / canvas.height),
+    //     -2,
+    //     2,
+    //     -10,
+    //     10
+    // ).toGL());
 
     babysitter(objectsToDraw);
+
+    gl.uniform4fv(lightPosition, [30.0, 20.0, 90.0, 1.0]);
+    gl.uniform3fv(lightDiffuse, [1.0, 1.0, 1.0]);
+    gl.uniform3fv(lightSpecular, [1.0, 1.0, 1.0]);
 
     // Animation initialization/support.
     previousTimestamp = null;

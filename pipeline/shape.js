@@ -11,10 +11,14 @@
         this.y = shapeFeatures.y || 0;
         this.z = shapeFeatures.z || 0;
         this.children = shapeFeatures.children || [];
-        this.color = shapeFeatures.color || {r: 0.0, g: 0.0, b:0.0};
+        this.color = shapeFeatures.color || {r: 0.0, g: 0.0, b: 0.0};
         this.colors = shapeFeatures.colors || null;
+        this.specularColor = shapeFeatures.specularColor || {r: 1.0, g: 1.0, b: 1.0};
+        this.specularColors = shapeFeatures.specularColors || null;
+        this.shininess = shapeFeatures.shininess || 16;
+        this.normals = shapeFeatures.normals;
         this.mode = shapeFeatures.mode;
-        this.axis = shapeFeatures.axis || {x: 0.0, y: 0.0, z: 0.0};
+        // this.axis = shapeFeatures.axis || {x: 0.0, y: 0.0, z: 0.0};
         this.sx = shapeFeatures.sx || 1;
         this.sy = shapeFeatures.sy || 1;
         this.sz = shapeFeatures.sz || 1;
@@ -140,12 +144,12 @@
             vertices = [],
             indices = [];
 
-         for (var i = 0; i < verticalBars + 1; i += 1) {
+         for (var i = 0; i <= verticalBars; i += 1) {
             var theta = (i * Math.PI) / verticalBars;
             var sinTheta = Math.sin(theta);
             var cosTheta = Math.cos(theta);
 
-            for (var j = 0; j < horizontalBars + 1; j += 1) {
+            for (var j = 0; j <= horizontalBars; j += 1) {
                 var phi = (j * 2 * Math.PI) / horizontalBars;
                 var x = radius * Math.cos(phi) * sinTheta;
                 var y = radius * cosTheta;
@@ -242,4 +246,64 @@
 
         return result;
     };
+
+    /*
+     * Utility function for computing normal vectors based on indexed vertices.
+     * The secret: take the cross product of each triangle.  Note that vertex order
+     * now matters---the resulting normal faces out from the side of the triangle
+     * that "sees" the vertices listed counterclockwise.
+     *
+     * The vector computations involved here mean that the Vector module must be
+     * loaded up for this function to work.
+     */
+    Shape.prototype.toNormalArray = function () {
+        var result = [];
+
+        // For each face...
+        for (var i = 0, maxi = this.indices.length; i < maxi; i += 1) {
+            // We form vectors from the first and second then second and third vertices.
+            var p0 = this.vertices[this.indices[i][0]];
+            var p1 = this.vertices[this.indices[i][1]];
+            var p2 = this.vertices[this.indices[i][2]];
+
+            // Technically, the first value is not a vector, but v can stand for vertex
+            // anyway, so...
+            var v0 = new Vector(p0[0], p0[1], p0[2]);
+            var v1 = new Vector(p1[0], p1[1], p1[2]).subtract(v0);
+            var v2 = new Vector(p2[0], p2[1], p2[2]).subtract(v0);
+            var normal = v1.cross(v2).unit();
+
+            // We then use this same normal for every vertex in this face.
+            for (var j = 0, maxj = this.indices[i].length; j < maxj; j += 1) {
+                result = result.concat(
+                    [ normal.x(), normal.y(), normal.z() ]
+                );
+            }
+        }
+
+        return result;
+    };
+
+    /*
+     * Another utility function for computing normals, this time just converting
+     * every vertex into its unit vector version.  This works mainly for objects
+     * that are centered around the origin.
+     */
+    Shape.prototype.toVertexNormalArray =  function () {
+        var result = [];
+
+        // For each face...
+        for (var i = 0, maxi = this.indices.length; i < maxi; i += 1) {
+            // For each vertex in that face...
+            for (var j = 0, maxj = this.indices[i].length; j < maxj; j += 1) {
+                var p = this.vertices[this.indices[i][j]];
+                var normal = new Vector(p[0], p[1], p[2]).unit();
+                result = result.concat(
+                    [ normal.x(), normal.y(), normal.z() ]
+                );
+            }
+        }
+
+        return result;
+    }
 }());

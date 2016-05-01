@@ -69,6 +69,24 @@
     	);
     };
 
+    Matrix.cameraMatrix = function (ax, ay, az, bx, by, bz, ax2, ay2, az2) {
+        var a = new Vector(ax, ay, az),
+            b = new Vector(bx, by, bz),
+            a2 = new Vector(ax2, ay2, az2);
+
+        var one = a.subtract(b).unit(),
+            two = a2.subtract(a2.projection(one)).unit(),
+            three = two.cross(one);
+
+        return new Matrix(
+            one.x(), one.y(), one.z(), -a.dot(one),
+            two.x(), two.y(), two.z(), -a.dot(two),
+            three.x(), three.y(), three.z(), -a.dot(three),
+            0, 0, 0, 1
+        );
+    
+    };
+
     /*
      * This code does not really belong here: it should live
      * in a separate library of matrix and transformation
